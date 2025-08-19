@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrintMini - Checkout</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { background: #4CAF50; color: white; padding: 1rem; text-align: center; }
+    .container { padding: 2rem; text-align: center; }
+    .product { border: 1px solid #ddd; padding: 1rem; border-radius: 8px; display: inline-block; }
+    .checkout-btn { margin-top: 1rem; padding: 0.75rem 1.5rem; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .checkout-btn:hover { background: #45a049; }
+    /* Modal */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
+             background-color: rgba(0,0,0,0.4); }
+    .modal-content { background: #fff; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
+    .close { float: right; font-size: 24px; cursor: pointer; }
+    .payment-option { margin: 10px 0; text-align: left; }
+    .complete-btn { margin-top: 20px; width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PrintMini</h1>
+  </header>
+
+  <div class="container">
+    <div class="product">
+      <h2>Mini Printer</h2>
+      <p>Price: ₹1299</p>
+      <button class="checkout-btn" onclick="openCheckout()">Buy Now</button>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeCheckout()">&times;</span>
+      <h2>Checkout</h2>
+      <div class="payment-option">
+        <input type="radio" id="codRadio" name="paymentMethod">
+        <label for="codRadio">Cash on Delivery</label>
+      </div>
+      <div class="payment-option">
+        <input type="radio" id="gpayRadio" name="paymentMethod">
+        <label for="gpayRadio">Google Pay (UPI)</label>
+      </div>
+      <button class="complete-btn" onclick="completeOrder()">Complete Order</button>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById("checkoutModal");
+
+    function openCheckout() {
+      modal.style.display = "block";
+    }
+    function closeCheckout() {
+      modal.style.display = "none";
+    }
+
+    function processGPay() {
+      const upiID = "sat3535d42@okaxis";
+      const amount = "1299";
+      const note = "PrintMini Printer Purchase";
+
+      // Google Pay UPI deeplink
+      const upiLink = `upi://pay?pa=${upiID}&pn=PrintMini&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`;
+
+      // Try opening UPI link
+      window.location.href = upiLink;
+
+      // Backup redirect after delay
+      setTimeout(() => {
+        window.location.href = "thank-you.html";
+      }, 5000);
+    }
+
+    function completeOrder() {
+      const method = document.querySelector('input[name="paymentMethod"]:checked');
+      if (!method) {
+        alert("Please select a payment method.");
+        return;
+      }
+      if (method.id === "codRadio") {
+        alert("Order placed successfully! Pay on delivery.");
+        closeCheckout();
+        window.location.href = "thank-you.html";
+      } else if (method.id === "gpayRadio") {
+        processGPay();
+      }
+    }
+
+    // Close modal if clicking outside
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeCheckout();
+      }
+    }
+  </script>
+
+  <!-- Testing Instructions -->
+  <!--
+  To test on mobile:
+  1. Save this file as index.html
+  2. Open terminal/command prompt in the same folder.
+     - On Windows: run `python -m http.server 8000`
+     - On Linux/Mac: run `python3 -m http.server 8000`
+  3. Find your computer's IP address on Wi-Fi (e.g. 192.168.1.5).
+  4. On your phone (same Wi-Fi), open browser and go to:
+     http://192.168.1.5:8000/index.html
+  5. Now test the GPay option on your phone.
+  -->
+</body>
+</html>
